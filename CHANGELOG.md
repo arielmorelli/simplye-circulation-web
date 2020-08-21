@@ -1,5 +1,9 @@
 ## Changelog
 
+### v0.4.22
+#### Updated
+- Streamlined the CustomListsSidebar code.
+
 ### v0.4.21
 #### Fixed
 - Fixed a bug involving editing unsaved announcements.
