@@ -1,17 +1,17 @@
 import { expect } from "chai";
-import { stub, spy } from "sinon";
+import { stub } from "sinon";
 
 import * as React from "react";
 import * as Enzyme from "enzyme";
-
+import { CustomListData } from "../../interfaces";
 import CustomListsSidebar from "../CustomListsSidebar";
-import EditableInput from "../EditableInput";
+import CustomListSidebarEntry from "../CustomListSidebarEntry";
 import { Link } from "react-router";
 import { Button } from "library-simplified-reusable-components";
 
 describe("CustomListsSidebar", () => {
   let wrapper: Enzyme.CommonWrapper<any, any, {}>;
-  let lists;
+  let lists: CustomListData[];
   let deleteCustomList = stub();
   let changeSort = stub();
 
@@ -62,53 +62,26 @@ describe("CustomListsSidebar", () => {
   it("renders a list of custom list info items", () => {
     let listOfLists = wrapper.find("ul");
     expect(listOfLists.length).to.equal(1);
-    let firstList = listOfLists.find("li").at(0);
-    let secondList = listOfLists.find("li").at(1);
+    let firstList = listOfLists.find(CustomListSidebarEntry).at(0);
+    expect(firstList.props().list).to.eql(lists[0]);
 
-    let firstListInfo = firstList.find(".custom-list-info");
-    expect(firstListInfo.find("p").at(0).text()).to.equal("First List");
-    expect(firstListInfo.find("p").at(1).text()).to.equal("Books in list: 5");
-    expect(firstListInfo.find("p").at(2).text()).to.equal("ID-1");
-
-    let firstListButtons = firstList.find(".custom-list-buttons");
-    let firstListEdit = firstListButtons.find(Link).at(0);
-    let firstListDelete = firstListButtons.find(Button).at(0);
+    let firstListEdit = firstList.find(Link).at(0);
+    let firstListDelete = firstList.find(Button).at(0);
     expect(firstListEdit.text()).to.contain("Edit");
-    expect(firstListEdit.prop("to")).to.equal("/admin/web/lists/library_name/edit/1");
+    expect(firstListEdit.prop("to")).to.equal(`/admin/web/lists/${wrapper.props().library}/edit/${lists[0].id}`);
     expect(firstListDelete.text()).to.contain("Delete");
     firstListDelete.simulate("click");
     expect(deleteCustomList.callCount).to.equal(1);
 
-    let secondListInfo = secondList.find(".custom-list-info");
-    expect(secondListInfo.find("p").at(0).text()).to.equal("Second List");
-    expect(secondListInfo.find("p").at(1).text()).to.equal("Books in list: 10");
-    expect(secondListInfo.find("p").at(2).text()).to.equal("ID-2");
+    let secondList = listOfLists.find(CustomListSidebarEntry).at(1);
+    expect(secondList.props().list).to.eql(lists[1]);
 
-    let secondListButtons = secondList.find(".custom-list-buttons");
-    let secondListEdit = secondListButtons.find(Link).at(0);
-    let secondListDelete = secondListButtons.find(Button).at(0);
+    let secondListEdit = secondList.find(Link).at(0);
+    let secondListDelete = secondList.find(Button).at(0);
     expect(secondListEdit.text()).to.contain("Edit");
-    expect(secondListEdit.prop("to")).to.equal("/admin/web/lists/library_name/edit/2");
+    expect(secondListEdit.prop("to")).to.equal(`/admin/web/lists/${wrapper.props().library}/edit/${lists[1].id}`);
     expect(secondListDelete.text()).to.contain("Delete");
     secondListDelete.simulate("click");
     expect(deleteCustomList.callCount).to.equal(2);
-  });
-
-  it("disables the edit button if the list is already being edited", () => {
-    let firstListEdit = wrapper.find(".custom-list-buttons").at(0).find(Link);
-    expect(firstListEdit.hasClass("disabled")).to.be.false;
-    expect(firstListEdit.text()).to.equal("EditPencil Icon");
-    wrapper.setProps({ identifier: 1 });
-    firstListEdit = wrapper.find(".custom-list-buttons").at(0).find(Button).at(0);
-    expect(firstListEdit.text()).to.equal("Editing");
-    expect(firstListEdit.prop("disabled")).to.be.true;
-  });
-
-  it("displays the delete button only to library managers", () => {
-    let deleteButtons = wrapper.find(".custom-list-buttons button");
-    expect(deleteButtons.length).to.equal(2);
-    wrapper.setProps({ isLibraryManager: false });
-    deleteButtons = wrapper.find(".custom-list-buttons button");
-    expect(deleteButtons.length).to.equal(0);
   });
 });
