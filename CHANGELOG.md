@@ -1,8 +1,8 @@
 ## Changelog
 
-### v0.4.22
+### v0.5.0
 #### Updated
-- Streamlined the CustomListsSidebar code.
+- Refactored the CustomLists components.
 
 ### v0.4.21
 #### Fixed

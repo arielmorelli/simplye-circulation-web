@@ -59,7 +59,7 @@ describe("CustomListsSidebar", () => {
     expect(asc.find("input").prop("checked")).to.be.false;
   });
 
-  it("renders a list of custom list info items", () => {
+  it("renders a list of custom list info items, and passes the delete function to them", () => {
     let listOfLists = wrapper.find("ul");
     expect(listOfLists.length).to.equal(1);
     let firstList = listOfLists.find(CustomListSidebarEntry).at(0);

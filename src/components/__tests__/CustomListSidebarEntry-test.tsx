@@ -8,7 +8,7 @@ import CustomListSidebarEntry from "../CustomListSidebarEntry";
 import { Link } from "react-router";
 import { Button } from "library-simplified-reusable-components";
 
-describe("CustomListSidebarEntry", () => {
+describe.only("CustomListSidebarEntry", () => {
   let wrapper: Enzyme.CommonWrapper<any, any, {}>;
   let list: CustomListData;
   let library: string;
@@ -34,16 +34,18 @@ describe("CustomListSidebarEntry", () => {
     expect(info.find("p").at(1).text()).to.equal("Books in list: " + list.entry_count);
     expect(info.find("p").at(2).text()).to.equal("ID-" + list.id);
   });
-  it("renders the edit button", () => {
+  it("disables the edit button if the list is already being edited", () => {
     let editButton = wrapper.find(".custom-list-buttons .btn").at(0);
     expect(editButton.text()).to.equal("Editing");
     expect(editButton.props().disabled).to.be.true;
+  });
+  it("renders the edit button if the list is not already being edited", () => {
     wrapper.setProps({ list: {...list, ...{id: 2}} });
-    editButton = wrapper.find(".custom-list-buttons .btn").at(0);
+    let editButton = wrapper.find(".custom-list-buttons .btn").at(0);
     expect(editButton.text()).to.contain("Edit");
     expect(editButton.find(Link).props()["to"]).to.equal("/admin/web/lists/" + library + "/edit/" + wrapper.props().list.id);
   });
-  it("renders the delete button", () => {
+  it("renders the delete button and calls the delete function on click", () => {
     let deleteButton = wrapper.find(".custom-list-buttons .btn").at(1);
     expect(deleteButton.text()).to.contain("Delete");
     deleteButton.simulate("click");
