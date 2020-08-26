@@ -8,7 +8,7 @@ import CustomListSidebarEntry from "../CustomListSidebarEntry";
 import { Link } from "react-router";
 import { Button } from "library-simplified-reusable-components";
 
-describe.only("CustomListSidebarEntry", () => {
+describe("CustomListSidebarEntry", () => {
   let wrapper: Enzyme.CommonWrapper<any, any, {}>;
   let list: CustomListData;
   let library: string;
