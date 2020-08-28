@@ -1,10 +1,8 @@
 import * as React from "react";
-import PencilIcon from "./icons/PencilIcon";
-import TrashIcon from "./icons/TrashIcon";
-import { Button } from "library-simplified-reusable-components";
-import { CustomListData, LibraryData } from "../interfaces";
+import { CustomListData } from "../interfaces";
 import EditableInput from "./EditableInput";
 import { Link } from "react-router";
+import CustomListSidebarEntry from "./CustomListSidebarEntry";
 
 export interface CustomListsSidebarProps {
   lists: CustomListData[];
@@ -27,13 +25,12 @@ export default class CustomListsSidebar extends React.Component<CustomListsSideb
           to={"/admin/web/lists/" + this.props.library + "/create"}>
             Create New List
         </Link>
-
         {
           this.props.lists && this.props.lists.length > 0 &&
           <div>
             {this.renderSortButtons()}
             <ul>
-              {this.props.lists.map(list => this.renderListInfo(list))}
+              {this.props.lists.map(list => this.renderEntry(list))}
             </ul>
           </div>
         }
@@ -64,36 +61,17 @@ export default class CustomListsSidebar extends React.Component<CustomListsSideb
     );
   }
 
-  renderListInfo(list: CustomListData): JSX.Element {
-    let isActive = this.props.identifier && this.props.identifier.toString() === list.id.toString();
+  renderEntry(list: CustomListData): JSX.Element {
+    let { library, identifier, isLibraryManager, deleteCustomList } = this.props;
     return (
-      <li key={list.id} className={isActive ? "active" : "" }>
-        <div className="custom-list-info">
-          <p>{ list.name }</p>
-          <p>Books in list: { list.entry_count }</p>
-          <p>ID-{ list.id }</p>
-        </div>
-        <div className = "custom-list-buttons">
-          {
-            isActive ?
-              <Button disabled={true} content="Editing" className="left-align small" /> :
-              <Link
-                to={"/admin/web/lists/" + this.props.library + "/edit/" + list.id}
-                className="btn left-align small"
-              >
-                <span>Edit<PencilIcon /></span>
-              </ Link>
-          }
-          {
-            this.props.isLibraryManager &&
-              <Button
-                callback={() => this.props.deleteCustomList(list)}
-                content={<span>Delete<TrashIcon /></span>}
-                className="right-align small danger"
-              />
-          }
-        </div>
-      </li>
+      <CustomListSidebarEntry
+        key={list.id}
+        list={list}
+        library={library}
+        identifier={identifier}
+        isLibraryManager={isLibraryManager}
+        deleteCustomList={deleteCustomList}
+      />
     );
   }
 }

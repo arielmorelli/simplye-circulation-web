@@ -1,5 +1,9 @@
 ## Changelog
 
+### v0.5.0
+#### Updated
+- Refactored the CustomLists components.
+
 ### v0.4.21
 #### Fixed
 - Fixed a bug involving editing unsaved announcements.
