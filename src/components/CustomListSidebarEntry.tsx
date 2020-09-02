@@ -34,7 +34,7 @@ export default function CustomListSidebarEntry(props: CustomListSidebarEntryProp
     );
     let editLink = (
       <Link
-        to={"/admin/web/lists/" + props.library + "/edit/" + props.list.id}
+        to={`/admin/web/lists/${props.library}/edit/${props.list.id}`}
         className="btn left-align small"
       >
         <span>Edit<PencilIcon /></span>
