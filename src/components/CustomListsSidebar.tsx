@@ -15,43 +15,43 @@ export interface CustomListsSidebarProps {
 }
 
 
-export default class CustomListsSidebar extends React.Component<CustomListsSidebarProps, {}> {
-  render(): JSX.Element {
+export default function CustomListsSidebar(props: CustomListsSidebarProps): JSX.Element {
+  let render = ((): JSX.Element => {
     return(
       <div className="custom-lists-sidebar">
         <h2>List Manager</h2>
         <Link
           className="btn create-button"
-          to={"/admin/web/lists/" + this.props.library + "/create"}>
+          to={"/admin/web/lists/" + props.library + "/create"}>
             Create New List
         </Link>
         {
-          this.props.lists && this.props.lists.length > 0 &&
+          props.lists && props.lists.length > 0 &&
           <div>
-            {this.renderSortButtons()}
+            {renderSortButtons()}
             <ul>
-              {this.props.lists.map(list => this.renderEntry(list))}
+              {props.lists.map(list => renderEntry(list))}
             </ul>
           </div>
         }
       </div>
     );
-  }
+  });
 
-  renderSortButtons(): JSX.Element {
+  let renderSortButtons = ((): JSX.Element => {
     let sortOrders = [["A-Z", "asc"], ["Z-A", "desc"]];
     return(
       <fieldset>
         <legend className="visuallyHidden">Select list sort type</legend>
         {
           sortOrders.map((order) => {
-            let isChecked = this.props.sortOrder === order[1];
+            let isChecked = props.sortOrder === order[1];
             return (<EditableInput
               key={order[1]}
               type="radio"
               label={`Sort ${order[0]}`}
               name="sort"
-              onChange={this.props.changeSort}
+              onChange={props.changeSort}
               checked={isChecked}
               disabled={false}
             />);
@@ -59,10 +59,10 @@ export default class CustomListsSidebar extends React.Component<CustomListsSideb
         }
       </fieldset>
     );
-  }
+  });
 
-  renderEntry(list: CustomListData): JSX.Element {
-    let { library, identifier, isLibraryManager, deleteCustomList } = this.props;
+  let renderEntry = ((list: CustomListData): JSX.Element => {
+    let { library, identifier, isLibraryManager, deleteCustomList } = props;
     return (
       <CustomListSidebarEntry
         key={list.id}
@@ -73,5 +73,7 @@ export default class CustomListsSidebar extends React.Component<CustomListsSideb
         deleteCustomList={deleteCustomList}
       />
     );
-  }
+  });
+
+  return render();
 }

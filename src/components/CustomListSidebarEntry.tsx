@@ -13,18 +13,18 @@ export interface CustomListSidebarEntryProps {
   deleteCustomList: (list: CustomListData) => Promise<void>;
 }
 
-export default class CustomListSidebarEntry extends React.Component <CustomListSidebarEntryProps, {}> {
-  renderInfo(): JSX.Element {
+export default function CustomListSidebarEntry(props: CustomListSidebarEntryProps): JSX.Element {
+  let renderInfo = ((): JSX.Element =>  {
     return (
       <div className="custom-list-info">
-        <p>{ this.props.list.name }</p>
-        <p>Books in list: { this.props.list.entry_count }</p>
-        <p>ID-{ this.props.list.id }</p>
+        <p>{ props.list.name }</p>
+        <p>Books in list: { props.list.entry_count }</p>
+        <p>ID-{ props.list.id }</p>
       </div>
     );
-  }
+  });
 
-  renderButtons(isActive: boolean): JSX.Element {
+  let renderButtons = ((isActive: boolean): JSX.Element => {
     let alreadyEditing = (
       <Button
         disabled={true}
@@ -34,7 +34,7 @@ export default class CustomListSidebarEntry extends React.Component <CustomListS
     );
     let editLink = (
       <Link
-        to={"/admin/web/lists/" + this.props.library + "/edit/" + this.props.list.id}
+        to={`/admin/web/lists/${props.library}/edit/${props.list.id}`}
         className="btn left-align small"
       >
         <span>Edit<PencilIcon /></span>
@@ -43,10 +43,10 @@ export default class CustomListSidebarEntry extends React.Component <CustomListS
     let editButton = isActive ? alreadyEditing : editLink;
 
     let deleteButton: JSX.Element;
-    if (this.props.isLibraryManager) {
+    if (props.isLibraryManager) {
       deleteButton = (
         <Button
-          callback={() => this.props.deleteCustomList(this.props.list)}
+          callback={() => props.deleteCustomList(props.list)}
           content={<span>Delete<TrashIcon /></span>}
           className="right-align small danger"
         />
@@ -59,16 +59,18 @@ export default class CustomListSidebarEntry extends React.Component <CustomListS
         { deleteButton }
       </div>
     );
-  }
+  });
 
-  render(): JSX.Element {
-    let { list, identifier } = this.props;
+  let render = ((): JSX.Element => {
+    let { list, identifier } = props;
     let isActive = identifier && identifier.toString() === list.id.toString();
     return (
       <li key={list.id} className={isActive ? "active" : "" }>
-        { this.renderInfo() }
-        { this.renderButtons(isActive) }
+        { renderInfo() }
+        { renderButtons(isActive) }
       </li>
     );
-  }
+  });
+
+  return render();
 }
