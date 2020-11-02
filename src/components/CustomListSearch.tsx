@@ -1,5 +1,6 @@
 import * as React from "react";
 import EditableInput from "./EditableInput";
+import CustomListSearchOptions from "./CustomListSearchOptions";
 import SearchIcon from "./icons/SearchIcon";
 import { LanguagesData, LibraryData } from "../interfaces";
 import { Button, Panel, Form } from "library-simplified-reusable-components";
@@ -15,6 +16,7 @@ export interface CustomListSearchProps {
 
 export interface CustomListSearchState {
   sortBy?: string;
+  language: string;
 }
 
 export default class CustomListSearch extends React.Component<CustomListSearchProps, CustomListSearchState> {
@@ -22,7 +24,8 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
     super(props);
     this.submitSearch = this.submitSearch.bind(this);
     this.sort = this.sort.bind(this);
-    this.state = { sortBy: null };
+    this.setLanguage = this.setLanguage.bind(this);
+    this.state = { sortBy: null, language: "" };
   }
 
   componentDidMount() {
@@ -34,12 +37,16 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
 
   submitSearch() {
     const searchTerms = encodeURIComponent((this.refs["searchTerms"] as HTMLInputElement).value);
-    const language = encodeURIComponent((this.refs["languages"] as HTMLSelectElement).value);
-    this.props.search(searchTerms, this.state.sortBy, language);
+    const {sortBy, language} = {...this.state};
+    this.props.search(searchTerms, sortBy, language);
   }
 
   sort(sortBy: string) {
     this.setState({ sortBy });
+  }
+
+  setLanguage(language: string) {
+    this.setState({ language });
   }
 
   renderSearchBox(): JSX.Element {
@@ -67,76 +74,23 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
     );
   }
 
-  renderSearchOptions(): JSX.Element {
-    const sortBy = {"Relevance (default)": null, "Title": "title", "Author": "author"};
-    return (
-      <Panel
-        id="advanced-search-options"
-        key="advanced-search-options"
-        style="instruction"
-        headerText="Advanced search options"
-        content={[
-          <fieldset key="sortBy" className="well search-options">
-            <legend>Sort by:</legend>
-            <ul>
-              {
-                Object.keys(sortBy).map(x => this.renderInput(x, sortBy[x]))
-              }
-            </ul>
-            <p><i>Note: currently, you can sort only by attributes which you have enabled in this library's Lanes & Filters configuration.</i></p>
-            <p><i>Selecting "Title" or "Author" will automatically filter out less relevant results.</i></p>
-          </fieldset>,
-          this.renderLanguageFilter()
-        ]}
+  render(): JSX.Element {
+    const searchOptions = (
+      <CustomListSearchOptions
+        updateSortBy={this.sort}
+        updateLanguage={this.setLanguage}
+        sortBy={this.state.sortBy}
+        library={this.props.library}
+        languages={this.props.languages}
       />
     );
-  }
 
-  renderLanguageFilter() {
-    let settings = this.props.library?.settings;
-    let languageFields = settings && Object.keys(this.props.library.settings).filter(x => x.match(/_collections/));
-    let languages = [].concat(...languageFields?.map(x => settings[x]));
-    let fieldset = (
-      <fieldset key="languages" className="well search-options">
-        <legend>Filter by language:</legend>
-        <section>
-          <select ref="languages">
-            <option value="all" aria-selected={false}>All</option>
-            {languages.map(x => <option value={x} aria-selected={false}>{this.getLanguageName(x)}</option>)}
-          </select>
-        </section>
-      </fieldset>
-    );
-    return fieldset;
-  }
-
-  getLanguageName(languageAbbreviation: string): string {
-    return this.props.languages && this.props.languages[languageAbbreviation].join("; ");
-  }
-
-  renderInput(k: string, v: string): JSX.Element {
-    return (
-      <li key={v}>
-        <EditableInput
-          type="radio"
-          name={v}
-          value={v}
-          label={k}
-          ref={v}
-          checked={v === this.state.sortBy}
-          onChange={() => this.sort(v)}
-        />
-      </li>
-    );
-  }
-
-  render(): JSX.Element {
     const searchForm = (
       <Form
         onSubmit={this.submitSearch}
         content={[
           this.renderSearchBox(),
-          this.renderSearchOptions()
+          searchOptions
         ]}
         buttonClass="left-align"
         buttonContent={<span>Search<SearchIcon /></span>}
