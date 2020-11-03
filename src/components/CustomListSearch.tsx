@@ -1,9 +1,10 @@
 import * as React from "react";
 import EditableInput from "./EditableInput";
+import CustomListSearchBox from "./CustomListSearchBox";
 import CustomListSearchOptions from "./CustomListSearchOptions";
 import SearchIcon from "./icons/SearchIcon";
 import { LanguagesData, LibraryData } from "../interfaces";
-import { Button, Panel, Form } from "library-simplified-reusable-components";
+import { Panel, Form } from "library-simplified-reusable-components";
 
 export interface CustomListSearchProps {
   search: (searchTerms: string, sortBy: string, language: string) => void;
@@ -15,6 +16,7 @@ export interface CustomListSearchProps {
 }
 
 export interface CustomListSearchState {
+  searchTerms?: string;
   sortBy?: string;
   language: string;
 }
@@ -23,22 +25,27 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
   constructor(props: CustomListSearchProps) {
     super(props);
     this.submitSearch = this.submitSearch.bind(this);
+    this.setSearchTerms = this.setSearchTerms.bind(this);
     this.sort = this.sort.bind(this);
     this.setLanguage = this.setLanguage.bind(this);
-    this.state = { sortBy: null, language: "" };
+    this.state = { searchTerms: this.props.startingTitle || "", sortBy: null, language: "" };
   }
 
   componentDidMount() {
     if (this.props.startingTitle) {
-      (this.refs["searchTerms"] as HTMLInputElement).value = this.props.startingTitle;
+      this.setState({ searchTerms: this.props.startingTitle });
+      // (this.refs["searchTerms"] as HTMLInputElement).value = this.props.startingTitle;
       this.submitSearch();
     }
   }
 
   submitSearch() {
-    const searchTerms = encodeURIComponent((this.refs["searchTerms"] as HTMLInputElement).value);
-    const {sortBy, language} = {...this.state};
+    const { searchTerms, sortBy, language } = {...this.state};
     this.props.search(searchTerms, sortBy, language);
+  }
+
+  setSearchTerms(searchTerms: string) {
+    this.setState({ searchTerms });
   }
 
   sort(sortBy: string) {
@@ -49,32 +56,16 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
     this.setState({ language });
   }
 
-  renderSearchBox(): JSX.Element {
-    return (
-      <fieldset key="search">
-        <legend className="visuallyHidden">Search for titles</legend>
-        {
-          this.props.entryPoints?.length ? (
-            <div className="entry-points">
-              <span>Select the entry point to search for:</span>
-              <div className="entry-points-selection">
-                {this.props.getEntryPointsElms(this.props.entryPoints)}
-              </div>
-            </div>
-          ) : null
-        }
-        <input
-          aria-label="Search for a book title"
-          className="form-control"
-          ref="searchTerms"
-          type="text"
-          placeholder="Enter a search term"
-        />
-      </fieldset>
-    );
-  }
-
   render(): JSX.Element {
+    const searchBox = (
+      <CustomListSearchBox
+        entryPoints={this.props.entryPoints}
+        getEntryPointsElms={this.props.getEntryPointsElms}
+        updateSearchTerms={this.setSearchTerms}
+        startingTitle={this.state.searchTerms}
+      />
+    );
+
     const searchOptions = (
       <CustomListSearchOptions
         updateSortBy={this.sort}
@@ -88,10 +79,7 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
     const searchForm = (
       <Form
         onSubmit={this.submitSearch}
-        content={[
-          this.renderSearchBox(),
-          searchOptions
-        ]}
+        content={[searchBox, searchOptions]}
         buttonClass="left-align"
         buttonContent={<span>Search<SearchIcon /></span>}
         className="search-titles"

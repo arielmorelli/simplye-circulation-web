@@ -6,7 +6,7 @@ import CustomListSearch from "../CustomListSearch";
 import CustomListSearchOptions from "../CustomListSearchOptions";
 
 
-describe.only("CustomListSearch", () => {
+describe("CustomListSearch", () => {
   let wrapper;
   let search;
   let library = {
@@ -39,14 +39,14 @@ describe.only("CustomListSearch", () => {
     expect(options.props().languages).to.equal(wrapper.props().languages);
   });
   it("searches", () => {
-    let input = wrapper.find(".form-control") as any;
-    input.getDOMNode().value = "test";
+    wrapper.setState({ searchTerms: "test" });
     let searchForm = wrapper.find("form");
     searchForm.simulate("submit");
 
     expect(search.callCount).to.equal(1);
     expect(search.args[0][0]).to.equal("test");
     expect(search.args[0][1]).to.be.null;
+    expect(search.args[0][2]).to.equal("");
   });
   it("sorts", () => {
     expect(wrapper.state().sortBy).to.be.null;
