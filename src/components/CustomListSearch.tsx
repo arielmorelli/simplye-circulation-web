@@ -34,7 +34,6 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
   componentDidMount() {
     if (this.props.startingTitle) {
       this.setState({ searchTerms: this.props.startingTitle });
-      // (this.refs["searchTerms"] as HTMLInputElement).value = this.props.startingTitle;
       this.submitSearch();
     }
   }

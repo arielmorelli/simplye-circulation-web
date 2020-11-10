@@ -321,7 +321,8 @@ export default class CustomListEditor extends React.Component<CustomListEditorPr
     }, 200);
   }
 
-  getSearchQueries(sortBy: string, language: string) {
+  getSearchQueries(sortBy: string, language: string): string {
+    language = language?.length ? language : "all";
     const entryPointSelected = this.state.entryPointSelected;
     let query = "";
     if (entryPointSelected && entryPointSelected !== "all") {
@@ -369,6 +370,7 @@ export default class CustomListEditor extends React.Component<CustomListEditorPr
    * for items without a language filter.
    */
   search(searchTerms: string, sortBy: string, language: string) {
+    searchTerms = encodeURIComponent(searchTerms);
     const searchQueries = this.getSearchQueries(sortBy, language);
     const url = `/${this.props.library.short_name}/search?q=${searchTerms}${searchQueries}`;
     this.props.search(url);

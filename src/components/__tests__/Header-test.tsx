@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { expect } from "chai";
 import { stub } from "sinon";
 import * as PropTypes from "prop-types";
@@ -14,9 +15,9 @@ describe("Header", () => {
   let wrapper;
   let context;
 
-  const libraryManager = new Admin([{ "role": "manager", "library": "nypl" }]);
-  const librarian = new Admin([{ "role": "librarian", "library": "nypl" }]);
-  const systemAdmin = new Admin([{ "role": "system", "library": "nypl" }]);
+  const libraryManager = new Admin([{ role: "manager", library: "nypl" }]);
+  const librarian = new Admin([{ role: "librarian", library: "nypl" }]);
+  const systemAdmin = new Admin([{ role: "system", library: "nypl" }]);
   const router = {
     createHref: stub(),
     push: stub(),
@@ -31,16 +32,13 @@ describe("Header", () => {
   const childContextTypes = {
     router: PropTypes.object.isRequired,
     pathFor: PropTypes.func.isRequired,
-    admin: PropTypes.object.isRequired
+    admin: PropTypes.object.isRequired,
   };
 
   beforeEach(() => {
     context = { library: () => "nypl", admin: libraryManager, router };
 
-    wrapper = shallow(
-      <Header />,
-      { context }
-    );
+    wrapper = shallow(<Header />, { context });
   });
 
   describe("rendering", () => {
@@ -54,7 +52,7 @@ describe("Header", () => {
 
       let libraries = [
         { short_name: "nypl", name: "NYPL" },
-        { short_name: "bpl" }
+        { short_name: "bpl" },
       ];
       wrapper.setProps({ libraries });
       select = wrapper.find(EditableInput);
@@ -93,7 +91,9 @@ describe("Header", () => {
       expect(mainNavItem.children().text()).to.equal("Catalog");
 
       let complaintsLink = navItems.at(1);
-      expect(complaintsLink.prop("href")).to.contain("/nypl%2Fadmin%2Fcomplaints");
+      expect(complaintsLink.prop("href")).to.contain(
+        "/nypl%2Fadmin%2Fcomplaints"
+      );
       expect(complaintsLink.children().text()).to.equal("Complaints");
 
       let hiddenLink = navItems.at(2);
@@ -129,7 +129,6 @@ describe("Header", () => {
       expect(settingsLink.prop("to")).to.equal("/admin/web/config/");
       expect(settingsLink.children().text()).to.equal("System Configuration");
 
-
       // no selected library
       wrapper.setContext({ admin: libraryManager });
       links = wrapper.find(Link);
@@ -156,7 +155,10 @@ describe("Header", () => {
     });
 
     it("shows account dropdown when the admin has an email", () => {
-      const admin = new Admin([{ "role": "librarian", "library": "nypl" }], "admin@nypl.org");
+      const admin = new Admin(
+        [{ role: "librarian", library: "nypl" }],
+        "admin@nypl.org"
+      );
       wrapper.setContext({ library: () => "nypl", admin: admin, router });
       let emailBtn = wrapper.find(".account-dropdown-toggle").render();
       expect(emailBtn.length).to.equal(1);
@@ -192,7 +194,7 @@ describe("Header", () => {
         wrapper.setContext({ library: () => "nypl", admin: librarian });
         let links = wrapper.find(Link);
         expect(links.length).to.equal(2);
-        links.forEach(link => {
+        links.forEach((link) => {
           expect(link.children().text()).to.not.equal("Troubleshooting");
         });
       });
@@ -200,7 +202,7 @@ describe("Header", () => {
         wrapper.setContext({ library: () => "nypl", admin: libraryManager });
         let links = wrapper.find(Link);
         expect(links.length).to.equal(5);
-        links.forEach(link => {
+        links.forEach((link) => {
           expect(link.children().text()).to.not.equal("Troubleshooting");
         });
       });
@@ -216,62 +218,68 @@ describe("Header", () => {
   describe("behavior", () => {
     it("fetches libraries on mount", () => {
       let fetchLibraries = stub();
-      wrapper = shallow(
-        <Header
-          fetchLibraries={fetchLibraries}
-          />,
-        { context: { admin: libraryManager }}
-      );
+      wrapper = shallow(<Header fetchLibraries={fetchLibraries} />, {
+        context: { admin: libraryManager },
+      });
       expect(fetchLibraries.callCount).to.equal(1);
     });
 
     it("changes library", async () => {
       let libraries = [
         { short_name: "nypl", name: "NYPL" },
-        { short_name: "bpl" }
+        { short_name: "bpl" },
       ];
       let fullContext = Object.assign({}, context, {
         pathFor: stub().returns("url"),
         router,
-        admin: libraryManager
+        admin: libraryManager,
       });
-      wrapper = mount(
-        <Header
-          libraries={libraries}
-          />,
-        { context: fullContext, childContextTypes }
-      );
+      wrapper = mount(<Header libraries={libraries} />, {
+        context: fullContext,
+        childContextTypes,
+      });
       let select = wrapper.find("select") as any;
       let selectElement = select.getDOMNode();
       selectElement.value = "bpl";
       select.simulate("change");
 
       expect(fullContext.router.push.callCount).to.equal(1);
-      expect(fullContext.router.push.args[0][0]).to.equal("/admin/web/collection/bpl%2Fgroups");
+      expect(fullContext.router.push.args[0][0]).to.equal(
+        "/admin/web/collection/bpl%2Fgroups?max_cache_age=0"
+      );
     });
 
     it("toggles account dropdown", () => {
-      const admin = new Admin([{ "role": "librarian", "library": "nypl" }], "admin@nypl.org");
+      const admin = new Admin(
+        [{ role: "librarian", library: "nypl" }],
+        "admin@nypl.org"
+      );
       context = { library: () => "nypl", admin, router };
       let fullContext = Object.assign({}, context, {
         pathFor: stub().returns("url"),
         router,
-        admin
+        admin,
       });
-      wrapper = mount(
-        <Header />,
-        { context: fullContext, childContextTypes }
-      );
+      wrapper = mount(<Header />, { context: fullContext, childContextTypes });
 
       let toggle = wrapper.find(".account-dropdown-toggle").hostNodes();
-      let dropdownLinks = wrapper.find("ul.dropdown-menu a");
+      let dropdownItems = wrapper.find("ul.dropdown-menu li");
+      let dropdownLinks = wrapper.find("ul.dropdown-menu li a");
+      expect(dropdownItems.length).to.equal(0);
       expect(dropdownLinks.length).to.equal(0);
 
       toggle.simulate("click");
-      dropdownLinks = wrapper.find("ul.dropdown-menu li");
+      dropdownItems = wrapper.find("ul.dropdown-menu li");
+      dropdownLinks = wrapper.find("ul.dropdown-menu li a");
+      expect(dropdownItems.length).to.equal(3);
       expect(dropdownLinks.length).to.equal(2);
-      let changePassword = dropdownLinks.find(Link);
-      expect(changePassword.prop("to")).to.equal("/admin/web/account/");
+
+      let loggedInAs = dropdownItems.at(0);
+      expect(loggedInAs.text()).to.equal("Logged in as a librarian");
+      let changePassword = dropdownLinks.at(0);
+      expect(changePassword.parent().prop("to")).to.equal(
+        "/admin/web/account/"
+      );
       // The first anchor element is from the Link component.
       let signOut = dropdownLinks.find("a").at(1);
       expect(signOut.prop("href")).to.equal("/admin/sign_out");
@@ -280,5 +288,19 @@ describe("Header", () => {
       dropdownLinks = wrapper.find("ul.dropdown-menu li");
       expect(dropdownLinks.length).to.equal(0);
     });
+  });
+
+  it("displays the user's level of permissions", () => {
+    let permissions = (args) =>
+      wrapper
+        .instance()
+        .displayPermissions(...args)
+        .props.children.join("");
+    expect(permissions([true, true])).to.equal("Logged in as a system admin");
+    expect(permissions([true, false])).to.equal("Logged in as a system admin");
+    expect(permissions([false, true])).to.equal(
+      "Logged in as a library manager"
+    );
+    expect(permissions([false, false])).to.equal("Logged in as a librarian");
   });
 });
