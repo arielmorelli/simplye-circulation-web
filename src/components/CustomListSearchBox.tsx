@@ -1,11 +1,13 @@
 import * as React from "react";
 import SearchIcon from "./icons/SearchIcon";
+import EditableInput from "./EditableInput";
 
 export interface CustomListSearchBoxProps {
   entryPoints?: string[];
-  getEntryPointsElms?: (entryPoints: string[]) => {};
   updateSearchTerms: (searchTerms: string) => void;
   startingTitle?: string;
+  entryPointSelected?: string;
+  changeEntryPoint?: (entryPoint: string) => void;
 }
 
 export default function CustomListSearchBox(props: CustomListSearchBoxProps) {
@@ -18,7 +20,7 @@ export default function CustomListSearchBox(props: CustomListSearchBoxProps) {
             <div className="entry-points">
               <span>Select the entry point to search for:</span>
               <div className="entry-points-selection">
-                {props.getEntryPointsElms(props.entryPoints)}
+                {getEntryPointsElms(props.entryPoints)}
               </div>
             </div>
           ) : null
@@ -33,6 +35,26 @@ export default function CustomListSearchBox(props: CustomListSearchBoxProps) {
         />
       </fieldset>
     );
+  };
+
+  let getEntryPointsElms = (entryPoints) => {
+    const entryPointsElms = [];
+    !entryPoints.includes("All") && entryPoints.unshift("All");
+    entryPoints.forEach(entryPoint =>
+      entryPointsElms.push(
+        <EditableInput
+          key={entryPoint}
+          type="radio"
+          name="entry-points-selection"
+          checked={entryPoint === props.entryPointSelected || entryPoint.toLowerCase() === props.entryPointSelected}
+          label={entryPoint}
+          value={entryPoint}
+          onChange={() => props.changeEntryPoint(entryPoint)}
+        />
+      )
+    );
+
+    return entryPointsElms;
   };
 
   return render();

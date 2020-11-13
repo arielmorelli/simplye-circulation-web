@@ -413,8 +413,8 @@ describe("CustomLists", () => {
     it("gets the correct entry points list from the right library", () => {
       let entryPoints = wrapper.instance().getEnabledEntryPoints(libraries);
 
-      expect(entryPoints.length).to.equal(2);
-      expect(entryPoints).to.eql(["Book", "Audio"]);
+      expect(entryPoints.length).to.equal(3);
+      expect(entryPoints).to.eql(["All", "Book", "Audio"]);
     });
 
     it("gets the correct entry points list from the second available library", () => {

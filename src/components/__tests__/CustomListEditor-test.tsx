@@ -13,7 +13,7 @@ import CustomListEntriesEditor from "../CustomListEntriesEditor";
 import * as PropTypes from "prop-types";
 import { Button } from "library-simplified-reusable-components";
 
-describe.only("CustomListEditor", () => {
+describe("CustomListEditor", () => {
   let wrapper;
   let editCustomList;
   let search;
@@ -95,7 +95,6 @@ describe.only("CustomListEditor", () => {
         setRouteLeaveHook: stub()
       }
     });
-
     wrapper = mount(
       <CustomListEditor
         library={library}
@@ -159,7 +158,7 @@ describe.only("CustomListEditor", () => {
   it("shows entry point options", () => {
     let inputs = wrapper.find(EditableInput);
     expect(inputs.at(3).props().label).to.equal("All");
-    expect(inputs.at(3).props().value).to.equal("all");
+    expect(inputs.at(3).props().value).to.equal("All");
     expect(inputs.at(3).props().checked).to.equal(true);
     expect(inputs.at(4).props().label).to.equal("Book");
     expect(inputs.at(4).props().value).to.equal("Book");

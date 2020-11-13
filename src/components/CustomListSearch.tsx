@@ -9,10 +9,11 @@ import { Panel, Form } from "library-simplified-reusable-components";
 export interface CustomListSearchProps {
   search: (searchTerms: string, sortBy: string, language: string) => void;
   entryPoints?: string[];
-  getEntryPointsElms?: (entryPoints: string[]) => {};
+  changeEntryPoint?: (entryPoint: string) => void;
   startingTitle?: string;
   library: LibraryData;
   languages: LanguagesData;
+  entryPointSelected?: string;
 }
 
 export interface CustomListSearchState {
@@ -59,9 +60,10 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
     const searchBox = (
       <CustomListSearchBox
         entryPoints={this.props.entryPoints}
-        getEntryPointsElms={this.props.getEntryPointsElms}
         updateSearchTerms={this.setSearchTerms}
         startingTitle={this.state.searchTerms}
+        changeEntryPoint={this.props.changeEntryPoint}
+        entryPointSelected={this.props.entryPointSelected}
       />
     );
 
