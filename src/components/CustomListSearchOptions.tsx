@@ -11,41 +11,16 @@ export interface CustomListSearchOptionsProps {
   languages?: LanguagesData;
 }
 
-export default function CustomListSearchOptions(props?: CustomListSearchOptionsProps) {
-
-  let render = () => {
-    return (
-      <Panel
-        id="advanced-search-options"
-        key="advanced-search-options"
-        style="instruction"
-        headerText="Advanced search options"
-        content={[
-          renderSortBy(),
-          renderLanguageFilter()
-        ]}
-       />
-    );
+function CustomListSearchOptions(props?: CustomListSearchOptionsProps) {
+  const updateLanguage = (e) => {
+    props.updateLanguage(e.target.value);
   };
 
-  let renderSortBy = () => {
-     const sortBy = { "Relevance (default)": null, "Title": "title", "Author": "author" };
-     const info: string[] = [
-       "Note: currently, you can sort only by attributes which you have enabled in this library's Lanes & Filters configuration.",
-       "Selecting \"Title\" or \"Author\" will automatically filter out less relevant results."
-     ];
-     return (
-       <fieldset key="sortBy" className="well search-options">
-         <legend>Sort by:</legend>
-         <ul>
-           { Object.keys(sortBy).map(x => <li key={x}>{renderInput(x, sortBy[x])}</li>) }
-         </ul>
-         { info.map(x => <p><i>{x}</i></p>) }
-       </fieldset>
-     );
+  const getLanguageName = (languageAbbreviation: string) => {
+    return props.languages && props.languages[languageAbbreviation].join("; ");
   };
 
-  let renderInput = (k: string, v: string) => {
+  const renderInput = (k: string, v: string) => {
     return (
       <EditableInput
         type="radio"
@@ -58,30 +33,59 @@ export default function CustomListSearchOptions(props?: CustomListSearchOptionsP
     );
   };
 
-  let renderLanguageFilter = () => {
-    let settings = props.library?.settings;
-    let languageFields = settings && Object.keys(settings).filter(x => x.match(/_collections/));
-    let languages = [].concat(...languageFields?.map(x => settings[x]));
+  // let renderSortBy = () => {
+  //    const sortBy = { "Relevance (default)": null, "Title": "title", "Author": "author" };
+  //    const info: string[] = [
+  //      "Note: currently, you can sort only by attributes which you have enabled in this library's Lanes & Filters configuration.",
+  //      "Selecting \"Title\" or \"Author\" will automatically filter out less relevant results."
+  //    ];
+  //    return (
+  //      <fieldset key="sortBy" className="well search-options">
+  //        <legend>Sort by:</legend>
+  //        <ul>
+  //          { Object.keys(sortBy).map(x => <li key={x}>{renderInput(x, sortBy[x])}</li>) }
+  //        </ul>
+  //        { info.map(x => <p><i>{x}</i></p>) }
+  //      </fieldset>
+  //    );
+  // };
+
+  const renderLanguageFilter = () => {
+    const settings = props.library?.settings;
+    const languageFields =
+      settings && Object.keys(settings).filter((x) => x.match(/_collections/));
+    const languages = [].concat(...languageFields?.map((x) => settings[x]));
     return (
       <fieldset key="languages" className="well search-options">
-       <legend>Filter by language:</legend>
-       <section>
-         <select onBlur={updateLanguage}>
-           <option value="all" aria-selected={false}>All</option>
-           {languages.map(x => <option key={x} value={x} aria-selected={false}>{getLanguageName(x)}</option>)}
-         </select>
-       </section>
-     </fieldset>
-   );
- };
+        <legend>Filter by language:</legend>
+        <section>
+          <select onBlur={updateLanguage}>
+            <option value="all" aria-selected={false}>
+              All
+            </option>
+            {languages.map((x) => (
+              <option key={x} value={x} aria-selected={false}>
+                {getLanguageName(x)}
+              </option>
+            ))}
+          </select>
+        </section>
+      </fieldset>
+    );
+  };
 
- let updateLanguage = (e) => {
-   props.updateLanguage(e.target.value);
- };
-
- let getLanguageName = (languageAbbreviation: string) => {
-   return props.languages && props.languages[languageAbbreviation].join("; ");
- };
-
-  return render();
+  return (
+    <Panel
+      id="advanced-search-options"
+      key="advanced-search-options"
+      style="instruction"
+      headerText="Advanced search options"
+      content={[
+        // renderSortBy(),
+        renderLanguageFilter(),
+      ]}
+    />
+  );
 }
+
+export default CustomListSearchOptions;
