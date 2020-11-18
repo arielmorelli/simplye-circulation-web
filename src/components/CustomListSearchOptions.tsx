@@ -33,22 +33,32 @@ function CustomListSearchOptions(props?: CustomListSearchOptionsProps) {
     );
   };
 
-  // let renderSortBy = () => {
-  //    const sortBy = { "Relevance (default)": null, "Title": "title", "Author": "author" };
-  //    const info: string[] = [
-  //      "Note: currently, you can sort only by attributes which you have enabled in this library's Lanes & Filters configuration.",
-  //      "Selecting \"Title\" or \"Author\" will automatically filter out less relevant results."
-  //    ];
-  //    return (
-  //      <fieldset key="sortBy" className="well search-options">
-  //        <legend>Sort by:</legend>
-  //        <ul>
-  //          { Object.keys(sortBy).map(x => <li key={x}>{renderInput(x, sortBy[x])}</li>) }
-  //        </ul>
-  //        { info.map(x => <p><i>{x}</i></p>) }
-  //      </fieldset>
-  //    );
-  // };
+  const renderSortBy = () => {
+    const sortBy = {
+      "Relevance (default)": null,
+      Title: "title",
+      Author: "author",
+    };
+    const info: string[] = [
+      "Note: currently, you can sort only by attributes which you have enabled in this library's Lanes & Filters configuration.",
+      'Selecting "Title" or "Author" will automatically filter out less relevant results.',
+    ];
+    return (
+      <fieldset key="sortBy" className="well search-options">
+        <legend>Sort by:</legend>
+        <ul>
+          {Object.keys(sortBy).map((x) => (
+            <li key={x}>{renderInput(x, sortBy[x])}</li>
+          ))}
+        </ul>
+        {info.map((x) => (
+          <p key={x}>
+            <i>{x}</i>
+          </p>
+        ))}
+      </fieldset>
+    );
+  };
 
   const renderLanguageFilter = () => {
     const settings = props.library?.settings;
@@ -60,7 +70,7 @@ function CustomListSearchOptions(props?: CustomListSearchOptionsProps) {
         <legend>Filter by language:</legend>
         <section>
           <select onBlur={updateLanguage}>
-            <option value="all" aria-selected={false}>
+            <option key="all" value="all" aria-selected={false}>
               All
             </option>
             {languages.map((x) => (
@@ -80,10 +90,7 @@ function CustomListSearchOptions(props?: CustomListSearchOptionsProps) {
       key="advanced-search-options"
       style="instruction"
       headerText="Advanced search options"
-      content={[
-        // renderSortBy(),
-        renderLanguageFilter(),
-      ]}
+      content={[renderSortBy(), renderLanguageFilter()]}
     />
   );
 }
