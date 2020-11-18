@@ -41,7 +41,7 @@ function CustomListSearchOptions(props?: CustomListSearchOptionsProps) {
     };
     const info: string[] = [
       "Note: currently, you can sort only by attributes which you have enabled in this library's Lanes & Filters configuration.",
-      'Selecting "Title" or "Author" will automatically filter out less relevant results.',
+      "Selecting 'Title' or 'Author' will automatically filter out less relevant results.",
     ];
     return (
       <fieldset key="sortBy" className="well search-options">
