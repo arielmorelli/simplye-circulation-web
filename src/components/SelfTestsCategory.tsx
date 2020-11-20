@@ -6,7 +6,6 @@ import {
   CollectionData,
   PatronAuthServiceData,
   SearchServiceData,
-  SelfTestsResult,
   ServiceData,
 } from "../interfaces";
 import { Panel } from "library-simplified-reusable-components";

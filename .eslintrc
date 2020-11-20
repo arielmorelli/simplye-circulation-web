@@ -25,6 +25,7 @@
     "jest": true
   },
   "rules": {
+    "@typescript-eslint/camelcase": ["off"],
     "import/extensions": 0,
     "global-require": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
