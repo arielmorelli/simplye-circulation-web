@@ -6,6 +6,7 @@ import { mount } from "enzyme";
 
 import CustomListEditor from "../CustomListEditor";
 import CustomListSearch from "../CustomListSearch";
+import CustomListSearchBox from "../CustomListSearchBox";
 import TextWithEditMode from "../TextWithEditMode";
 import EditableInput from "../EditableInput";
 import CustomListEntriesEditor from "../CustomListEntriesEditor";
@@ -94,7 +95,6 @@ describe("CustomListEditor", () => {
         setRouteLeaveHook: stub()
       }
     });
-
     wrapper = mount(
       <CustomListEditor
         library={library}
@@ -158,7 +158,7 @@ describe("CustomListEditor", () => {
   it("shows entry point options", () => {
     let inputs = wrapper.find(EditableInput);
     expect(inputs.at(3).props().label).to.equal("All");
-    expect(inputs.at(3).props().value).to.equal("all");
+    expect(inputs.at(3).props().value).to.equal("All");
     expect(inputs.at(3).props().checked).to.equal(true);
     expect(inputs.at(4).props().label).to.equal("Book");
     expect(inputs.at(4).props().value).to.equal("Book");
@@ -450,7 +450,7 @@ describe("CustomListEditor", () => {
     );
     let input = wrapper.find(".form-control") as any;
     input.getDOMNode().value = "test";
-
+    input.simulate("change");
     let searchForm = wrapper.find("form");
     searchForm.simulate("submit");
     // The default language is "all"
@@ -459,7 +459,7 @@ describe("CustomListEditor", () => {
 
     let select = wrapper.find(".search-options select") as any;
     select.getDOMNode().value = "eng";
-    select.simulate("change");
+    select.simulate("blur");
 
     searchForm = wrapper.find("form");
     searchForm.simulate("submit");
@@ -516,6 +516,7 @@ describe("CustomListEditor", () => {
     );
     let textInput = wrapper.find(".form-control") as any;
     textInput.getDOMNode().value = "harry potter";
+    textInput.simulate("change");
     let radioInput = wrapper.find(".entry-points-selection input") as any;
     const bookInput = radioInput.at(1);
     let searchForm = wrapper.find("form");
@@ -552,6 +553,7 @@ describe("CustomListEditor", () => {
     );
     let textInput = wrapper.find(".form-control") as any;
     textInput.getDOMNode().value = "oliver twist";
+    textInput.simulate("change");
     let radioInput = wrapper.find(".entry-points-selection input") as any;
     const audioInput = radioInput.at(2);
     let searchForm = wrapper.find("form");
@@ -593,6 +595,7 @@ describe("CustomListEditor", () => {
     let textInput = wrapper.find(".form-control") as any;
 
     textInput.getDOMNode().value = "oliver twist";
+    textInput.simulate("change");
     audioInput.checked = true;
     audioInput.simulate("change");
 
