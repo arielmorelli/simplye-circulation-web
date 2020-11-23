@@ -613,13 +613,13 @@ describe("CustomLists", () => {
       confirmStub.returns(true);
 
       await deleteCustomListFn(listDataSort[0]);
-      expect(confirmStub.args[0][0]).to.equal('Delete list \'a list\'? ');
+      expect(confirmStub.args[0][0]).to.equal("Delete list 'a list'? ");
 
       // Continuining from the previous test, this second list corresponds
       // to the second "button" that is being clicked.
       await deleteCustomListFn(listDataSort[1]);
       expect(confirmStub.args[1][0]).to.equal(
-        'Delete list \'z list\'? ' +
+        "Delete list 'z list'? " +
           "Deleting this list will delete the following lanes:\n" +
           "\nLane name: lane 1\nLane name: lane 2"
       );
