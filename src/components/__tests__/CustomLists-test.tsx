@@ -607,7 +607,7 @@ describe("CustomLists", () => {
       getDeletedLanes.restore();
     });
 
-    it.only("deletes a list and warns of lanes that will be deleted", async () => {
+    it("deletes a list and warns of lanes that will be deleted", async () => {
       wrapper.setProps({ lanes: allLanes });
 
       confirmStub.returns(true);
