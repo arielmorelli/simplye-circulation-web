@@ -3,113 +3,93 @@ import { spy, stub } from "sinon";
 import * as React from "react";
 import { mount } from "enzyme";
 import CustomListSearch from "../CustomListSearch";
-
+import CustomListSearchOptions from "../CustomListSearchOptions";
 
 describe("CustomListSearch", () => {
   let wrapper;
   let search;
-  let library = {
+  const library = {
     uuid: "uuid",
     name: "name",
     short_name: "short_name",
     settings: {
-      "large_collections": ["eng", "fre", "spa"]
-    }
+      large_collections: ["eng", "fre", "spa"],
+    },
   };
 
-  let languages = {
-    "eng": ["English"],
-    "spa": ["Spanish", "Castilian"],
-    "fre": ["French"]
+  const languages = {
+    eng: ["English"],
+    spa: ["Spanish", "Castilian"],
+    fre: ["French"],
   };
   beforeEach(() => {
     search = stub();
     wrapper = mount(
-      <CustomListSearch search={search} library={library} languages={languages} />
+      <CustomListSearch
+        search={search}
+        library={library}
+        languages={languages}
+      />
     );
   });
+  it("renders the CustomListSearchOptions component", () => {
+    const options = wrapper.find(CustomListSearchOptions);
+    expect(options.length).to.equal(1);
+    expect(options.props().updateSortBy).to.eql(wrapper.instance().sort);
+    expect(options.props().updateLanguage).to.eql(
+      wrapper.instance().setLanguage
+    );
+    expect(options.props().sortBy).to.equal(wrapper.state().sortBy);
+    expect(options.props().library).to.equal(wrapper.props().library);
+    expect(options.props().languages).to.equal(wrapper.props().languages);
+  });
   it("searches", () => {
-    let input = wrapper.find(".form-control") as any;
-    input.getDOMNode().value = "test";
-    let searchForm = wrapper.find("form");
+    wrapper.setState({ searchTerms: "test" });
+    const searchForm = wrapper.find("form");
     searchForm.simulate("submit");
 
     expect(search.callCount).to.equal(1);
     expect(search.args[0][0]).to.equal("test");
     expect(search.args[0][1]).to.be.null;
+    expect(search.args[0][2]).to.equal("");
   });
   it("sorts", () => {
-    let spySort = spy(wrapper.instance(), "sort");
-    wrapper.setProps({ sort: spySort });
     expect(wrapper.state().sortBy).to.be.null;
-    let sortOptions = wrapper.find(".search-options").find(".form-group");
-    expect(sortOptions.length).to.equal(3);
+    let searchForm = wrapper.find("form");
+    searchForm.simulate("submit");
+    let sortByArg = search.args[0][1];
+    expect(sortByArg).to.be.null;
 
-    let relevance = sortOptions.at(0);
-    expect(relevance.text()).to.equal("Relevance (default)");
-    let relevanceRadio = relevance.find("input");
-    expect(relevanceRadio.props().type).to.equal("radio");
-    expect(relevanceRadio.props().name).to.be.null;
-    expect(relevanceRadio.props().value).to.equal("");
-    expect(relevanceRadio.props().checked).to.be.true;
-
-    let title = sortOptions.at(1);
-    expect(title.text()).to.equal("Title");
-    let titleRadio = title.find("input");
-    expect(titleRadio.props().type).to.equal("radio");
-    expect(titleRadio.props().name).to.equal("title");
-    expect(titleRadio.props().value).to.equal("title");
-    expect(titleRadio.props().checked).to.be.false;
-
-    let author = sortOptions.at(2);
-    expect(author.text()).to.equal("Author");
-    let authorRadio = author.find("input");
-    expect(authorRadio.props().type).to.equal("radio");
-    expect(authorRadio.props().name).to.equal("author");
-    expect(authorRadio.props().value).to.equal("author");
-    expect(authorRadio.props().checked).to.be.false;
-
-    titleRadio.simulate("change");
-    expect(spySort.callCount).to.equal(1);
-    expect(spySort.args[0][0]).to.equal("title");
-    expect(wrapper.state().sortBy).to.equal("title");
-
-    authorRadio.simulate("change");
-    expect(spySort.callCount).to.equal(2);
-    expect(spySort.args[1][0]).to.equal("author");
+    wrapper.instance().sort("author");
     expect(wrapper.state().sortBy).to.equal("author");
-
-    relevanceRadio.simulate("change");
-    expect(spySort.callCount).to.equal(3);
-    expect(spySort.args[2][0]).to.be.null;
-    expect(wrapper.state().sortBy).to.be.null;
-
-    spySort.restore();
+    searchForm = wrapper.find("form");
+    searchForm.simulate("submit");
+    sortByArg = search.args[1][1];
+    expect(sortByArg).to.equal("author");
   });
   it("filters by language", () => {
-    let languageFieldset = wrapper.find("fieldset").at(2);
-    expect(languageFieldset.find("legend").text()).to.equal("Filter by language:");
-    let languageMenu = languageFieldset.find("select");
-    let options = languageMenu.find("option");
-    expect(options.at(0).prop("value")).to.equal("all");
-    expect(options.at(0).text()).to.equal("All");
-    expect(options.at(1).prop("value")).to.equal("eng");
-    expect(options.at(1).text()).to.equal("English");
-    expect(options.at(2).prop("value")).to.equal("fre");
-    expect(options.at(2).text()).to.equal("French");
-    expect(options.at(3).prop("value")).to.equal("spa");
-    expect(options.at(3).text()).to.equal("Spanish; Castilian");
+    expect(wrapper.state().language).to.equal("");
+    let searchForm = wrapper.find("form");
+    searchForm.simulate("submit");
+    let languageArg = search.args[0][2];
+    expect(languageArg).to.equal("");
 
-    languageMenu.getDOMNode().value = "fre";
-    languageMenu.simulate("change");
-    languageFieldset.closest("form").simulate("submit");
-    expect(search.callCount).to.equal(1);
-    expect(search.args[0][2]).to.equal("fre");
+    wrapper.instance().setLanguage("fre");
+    expect(wrapper.state().language).to.equal("fre");
+    searchForm = wrapper.find("form");
+    searchForm.simulate("submit");
+    languageArg = search.args[1][2];
+    expect(languageArg).to.equal("fre");
   });
   it("automatically searches if there is a startingTitle prop", () => {
-    let search = stub();
+    const search = stub();
     wrapper = mount(
-      <CustomListSearch startingTitle="test" search={search} library={library} languages={languages} />
+      <CustomListSearch
+        startingTitle="test"
+        search={search}
+        library={library}
+        languages={languages}
+      />
     );
     expect(search.callCount).to.equal(1);
     expect(search.args[0][0]).to.equal("test");

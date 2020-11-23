@@ -60,7 +60,6 @@ export default class CustomListEditor extends React.Component<
     this.reset = this.reset.bind(this);
     this.search = this.search.bind(this);
     this.changeEntryPoint = this.changeEntryPoint.bind(this);
-    this.getEntryPointsElms = this.getEntryPointsElms.bind(this);
   }
 
   render(): JSX.Element {
@@ -140,10 +139,11 @@ export default class CustomListEditor extends React.Component<
             <CustomListSearch
               search={this.search}
               entryPoints={this.props.entryPoints}
-              getEntryPointsElms={this.getEntryPointsElms}
               startingTitle={this.props.startingTitle}
               library={this.props.library}
               languages={this.props.languages}
+              changeEntryPoint={this.changeEntryPoint}
+              entryPointSelected={this.state.entryPointSelected}
             />
           </section>
           <CustomListEntriesEditor
@@ -387,7 +387,8 @@ export default class CustomListEditor extends React.Component<
     }, 200);
   }
 
-  getSearchQueries(sortBy: string, language: string) {
+  getSearchQueries(sortBy: string, language: string): string {
+    language = language?.length ? language : "all";
     const entryPointSelected = this.state.entryPointSelected;
     let query = "";
     if (entryPointSelected && entryPointSelected !== "all") {
@@ -398,40 +399,6 @@ export default class CustomListEditor extends React.Component<
     return query;
   }
 
-  getEntryPointsElms(entryPoints) {
-    const entryPointsElms = [];
-    !entryPoints.includes("All") &&
-      entryPointsElms.push(
-        <EditableInput
-          key="all"
-          type="radio"
-          name="entry-points-selection"
-          checked={"all" === this.state.entryPointSelected}
-          label="All"
-          value="all"
-          onChange={() => this.changeEntryPoint("all")}
-        />
-      );
-    entryPoints.forEach((entryPoint) =>
-      entryPointsElms.push(
-        <EditableInput
-          key={entryPoint}
-          type="radio"
-          name="entry-points-selection"
-          checked={
-            entryPoint === this.state.entryPointSelected ||
-            entryPoint.toLowerCase() === this.state.entryPointSelected
-          }
-          label={entryPoint}
-          value={entryPoint}
-          onChange={() => this.changeEntryPoint(entryPoint)}
-        />
-      )
-    );
-
-    return entryPointsElms;
-  }
-
   /**
    * search()
    * Search for items along with an EntryPoint query and a default
@@ -439,6 +406,7 @@ export default class CustomListEditor extends React.Component<
    * for items without a language filter.
    */
   search(searchTerms: string, sortBy: string, language: string) {
+    searchTerms = encodeURIComponent(searchTerms);
     const searchQueries = this.getSearchQueries(sortBy, language);
     const url = `/${this.props.library?.short_name}/search?q=${searchTerms}${searchQueries}`;
     this.props.search(url);
