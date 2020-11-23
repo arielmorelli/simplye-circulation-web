@@ -22,14 +22,21 @@ export interface CustomListSearchState {
   language: string;
 }
 
-export default class CustomListSearch extends React.Component<CustomListSearchProps, CustomListSearchState> {
+export default class CustomListSearch extends React.Component<
+  CustomListSearchProps,
+  CustomListSearchState
+> {
   constructor(props: CustomListSearchProps) {
     super(props);
     this.submitSearch = this.submitSearch.bind(this);
     this.setSearchTerms = this.setSearchTerms.bind(this);
     this.sort = this.sort.bind(this);
     this.setLanguage = this.setLanguage.bind(this);
-    this.state = { searchTerms: this.props.startingTitle || "", sortBy: null, language: "" };
+    this.state = {
+      searchTerms: this.props.startingTitle || "",
+      sortBy: null,
+      language: "",
+    };
   }
 
   componentDidMount() {
@@ -40,7 +47,7 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
   }
 
   submitSearch() {
-    const { searchTerms, sortBy, language } = {...this.state};
+    const { searchTerms, sortBy, language } = { ...this.state };
     this.props.search(searchTerms, sortBy, language);
   }
 
@@ -82,7 +89,12 @@ export default class CustomListSearch extends React.Component<CustomListSearchPr
         onSubmit={this.submitSearch}
         content={[searchBox, searchOptions]}
         buttonClass="left-align"
-        buttonContent={<span>Search<SearchIcon /></span>}
+        buttonContent={
+          <span>
+            Search
+            <SearchIcon />
+          </span>
+        }
         className="search-titles"
       />
     );

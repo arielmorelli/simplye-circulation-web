@@ -5,42 +5,47 @@ import { mount } from "enzyme";
 import CustomListSearch from "../CustomListSearch";
 import CustomListSearchOptions from "../CustomListSearchOptions";
 
-
 describe("CustomListSearch", () => {
   let wrapper;
   let search;
-  let library = {
+  const library = {
     uuid: "uuid",
     name: "name",
     short_name: "short_name",
     settings: {
-      "large_collections": ["eng", "fre", "spa"]
-    }
+      large_collections: ["eng", "fre", "spa"],
+    },
   };
 
-  let languages = {
-    "eng": ["English"],
-    "spa": ["Spanish", "Castilian"],
-    "fre": ["French"]
+  const languages = {
+    eng: ["English"],
+    spa: ["Spanish", "Castilian"],
+    fre: ["French"],
   };
   beforeEach(() => {
     search = stub();
     wrapper = mount(
-      <CustomListSearch search={search} library={library} languages={languages} />
+      <CustomListSearch
+        search={search}
+        library={library}
+        languages={languages}
+      />
     );
   });
   it("renders the CustomListSearchOptions component", () => {
-    let options = wrapper.find(CustomListSearchOptions);
+    const options = wrapper.find(CustomListSearchOptions);
     expect(options.length).to.equal(1);
     expect(options.props().updateSortBy).to.eql(wrapper.instance().sort);
-    expect(options.props().updateLanguage).to.eql(wrapper.instance().setLanguage);
+    expect(options.props().updateLanguage).to.eql(
+      wrapper.instance().setLanguage
+    );
     expect(options.props().sortBy).to.equal(wrapper.state().sortBy);
     expect(options.props().library).to.equal(wrapper.props().library);
     expect(options.props().languages).to.equal(wrapper.props().languages);
   });
   it("searches", () => {
     wrapper.setState({ searchTerms: "test" });
-    let searchForm = wrapper.find("form");
+    const searchForm = wrapper.find("form");
     searchForm.simulate("submit");
 
     expect(search.callCount).to.equal(1);
@@ -77,9 +82,14 @@ describe("CustomListSearch", () => {
     expect(languageArg).to.equal("fre");
   });
   it("automatically searches if there is a startingTitle prop", () => {
-    let search = stub();
+    const search = stub();
     wrapper = mount(
-      <CustomListSearch startingTitle="test" search={search} library={library} languages={languages} />
+      <CustomListSearch
+        startingTitle="test"
+        search={search}
+        library={library}
+        languages={languages}
+      />
     );
     expect(search.callCount).to.equal(1);
     expect(search.args[0][0]).to.equal("test");

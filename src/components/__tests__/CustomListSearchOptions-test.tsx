@@ -21,13 +21,13 @@ describe("CustomListSearchOptions", () => {
       name: "name",
       short_name: "short_name",
       settings: {
-        "large_collections": ["eng", "fre", "spa"]
-      }
+        large_collections: ["eng", "fre", "spa"],
+      },
     };
     languages = {
-      "eng": ["English"],
-      "spa": ["Spanish", "Castilian"],
-      "fre": ["French"]
+      eng: ["English"],
+      spa: ["Spanish", "Castilian"],
+      fre: ["French"],
     };
     wrapper = mount(
       <CustomListSearchOptions
@@ -40,28 +40,28 @@ describe("CustomListSearchOptions", () => {
     );
   });
   it("sorts", () => {
-    let sortOptions = wrapper.find(".search-options").find(".form-group");
+    const sortOptions = wrapper.find(".search-options").find(".form-group");
     expect(sortOptions.length).to.equal(3);
 
-    let relevance = sortOptions.at(0);
+    const relevance = sortOptions.at(0);
     expect(relevance.text()).to.equal("Relevance (default)");
-    let relevanceRadio = relevance.find("input");
+    const relevanceRadio = relevance.find("input");
     expect(relevanceRadio.props().type).to.equal("radio");
     expect(relevanceRadio.props().name).to.be.null;
     expect(relevanceRadio.props().value).to.equal("");
     expect(relevanceRadio.props().checked).to.be.true;
 
-    let title = sortOptions.at(1);
+    const title = sortOptions.at(1);
     expect(title.text()).to.equal("Title");
-    let titleRadio = title.find("input");
+    const titleRadio = title.find("input");
     expect(titleRadio.props().type).to.equal("radio");
     expect(titleRadio.props().name).to.equal("title");
     expect(titleRadio.props().value).to.equal("title");
     expect(titleRadio.props().checked).to.be.false;
 
-    let author = sortOptions.at(2);
+    const author = sortOptions.at(2);
     expect(author.text()).to.equal("Author");
-    let authorRadio = author.find("input");
+    const authorRadio = author.find("input");
     expect(authorRadio.props().type).to.equal("radio");
     expect(authorRadio.props().name).to.equal("author");
     expect(authorRadio.props().value).to.equal("author");
@@ -81,10 +81,12 @@ describe("CustomListSearchOptions", () => {
   });
 
   it("filters by language", () => {
-    let languageFieldset = wrapper.find("fieldset").at(1);
-    expect(languageFieldset.find("legend").text()).to.equal("Filter by language:");
-    let languageMenu = languageFieldset.find("select");
-    let options = languageMenu.find("option");
+    const languageFieldset = wrapper.find("fieldset").at(1);
+    expect(languageFieldset.find("legend").text()).to.equal(
+      "Filter by language:"
+    );
+    const languageMenu = languageFieldset.find("select");
+    const options = languageMenu.find("option");
     expect(options.at(0).prop("value")).to.equal("all");
     expect(options.at(0).text()).to.equal("All");
     expect(options.at(1).prop("value")).to.equal("eng");
