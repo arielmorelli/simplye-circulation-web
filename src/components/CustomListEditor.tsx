@@ -45,6 +45,8 @@ export default class CustomListEditor extends React.Component<
   CustomListEditorState
 > {
   static listener;
+  private listTitleRef = React.createRef<TextWithEditMode>();
+  private listEntriesRef = React.createRef<CustomListEntriesEditor>();
   constructor(props) {
     super(props);
     this.state = {
@@ -83,7 +85,7 @@ export default class CustomListEditor extends React.Component<
                 text={listTitle}
                 placeholder="list title"
                 onUpdate={this.changeTitle}
-                ref="listTitle"
+                ref={this.listTitleRef}
                 aria-label="Enter a title for this list"
                 disableIfBlank={true}
               />
@@ -157,7 +159,7 @@ export default class CustomListEditor extends React.Component<
             isFetchingMoreCustomListEntries={
               this.props.isFetchingMoreCustomListEntries
             }
-            ref="listEntries"
+            ref={this.listEntriesRef}
             opdsFeedUrl={opdsFeedUrl}
             entryCount={this.props.entryCount}
             listId={this.props.listId}
@@ -177,7 +179,7 @@ export default class CustomListEditor extends React.Component<
     CustomListEditor.listener();
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // Note: This gets called after performing a search, at which point the
     // state of the component can already have updates that need to be taken
     // into account.
@@ -342,15 +344,11 @@ export default class CustomListEditor extends React.Component<
     if (this.props.list) {
       data.append("id", this.props.listId);
     }
-    const title = (this.refs["listTitle"] as TextWithEditMode).getText();
+    const title = this.listTitleRef.current.getText();
     data.append("name", title);
-    const entries = (this.refs[
-      "listEntries"
-    ] as CustomListEntriesEditor).getEntries();
+    const entries = this.listEntriesRef.current.getEntries();
     data.append("entries", JSON.stringify(entries));
-    const deletedEntries = (this.refs[
-      "listEntries"
-    ] as CustomListEntriesEditor).getDeleted();
+    const deletedEntries = this.listEntriesRef.current.getDeleted();
     data.append("deletedEntries", JSON.stringify(deletedEntries));
     const collections = this.state.collections.map(
       (collection) => collection.id
@@ -360,7 +358,7 @@ export default class CustomListEditor extends React.Component<
     this.props
       .editCustomList(data, this.props.listId && String(this.props.listId))
       .then(() => {
-        (this.refs["listEntries"] as CustomListEntriesEditor).clearState();
+        this.listEntriesRef.current.clearState();
         this.setState({ title: this.state.title, entries });
 
         // If a new list was created, go to the new list's edit page.
@@ -375,8 +373,8 @@ export default class CustomListEditor extends React.Component<
   }
 
   reset() {
-    (this.refs["listTitle"] as TextWithEditMode).reset();
-    (this.refs["listEntries"] as CustomListEntriesEditor).reset();
+    this.listTitleRef.current.reset();
+    this.listEntriesRef.current.reset();
     setTimeout(() => {
       this.setState({
         title: this.state.title,
