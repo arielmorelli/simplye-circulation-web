@@ -1,7 +1,7 @@
 /* eslint react/no-unescaped-entities: "off" */
 import * as React from "react";
 import { Panel, Form } from "library-simplified-reusable-components";
-import { ServicesData, LibraryData } from "../interfaces";
+import { ServicesData, LibraryData, PluginData } from "../interfaces";
 import { PluginConfig, PluginSettingField } from "../interfaces";
 import { Store } from "redux";
 import { State } from "../reducers/index";
@@ -12,7 +12,8 @@ import editorAdapter from "../editorAdapter";
 import * as PropTypes from "prop-types";
 
 export interface ServiceEditFormProps<T> {
-  plugin: PluginConfig;
+  plugin: PluginData;
+  pluginConfig: PluginConfig;
   library: LibraryData;
   updatePlugin: (
     library: string,
@@ -53,7 +54,7 @@ export default class PluginEditForm<
   render(): JSX.Element {
     let hasData = false;
 
-    const fields = (this.props.plugin && this.props.plugin.fields) || [];
+    const fields = (this.props.plugin && this.props.pluginConfig.fields) || [];
     const { requiredFields, optionalFields } = this.separateFields(fields);
 
     const requiredFieldsPanel = (
@@ -143,8 +144,8 @@ export default class PluginEditForm<
     this.context.editorStore
       .dispatch(
         actions.updatePlugin(
-          this.props.library.short_name.toString(),
-          this.props.plugin.name.toString(),
+          this.props.library.short_name,
+          this.props.plugin.name,
           data
         )
       )

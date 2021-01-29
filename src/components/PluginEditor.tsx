@@ -72,7 +72,8 @@ export class PluginEditor extends React.Component<
 
         {this.state.fetched && this.state.pluginConfig && (
           <PluginEditForm
-            plugin={this.state.pluginConfig}
+            pluginConfig={this.state.pluginConfig}
+            plugin={this.props.plugin}
             library={this.props.library}
             updatePlugin={this.props.updatePlugin}
           />
